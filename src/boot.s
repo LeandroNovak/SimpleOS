@@ -1,3 +1,5 @@
+/* source: https://wiki.osdev.org/Bare_Bones */
+
 /* Declare constants for the multiboot header. */
 .set ALIGN,    1<<0             /* align loaded modules on page boundaries */
 .set MEMINFO,  1<<1             /* provide memory map */
