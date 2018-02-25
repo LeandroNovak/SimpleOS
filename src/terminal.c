@@ -56,3 +56,80 @@ void terminal_write(const char* data, size_t size) {
 void terminal_writestring(const char* data) {
 	terminal_write(data, strlen(data));
 }
+
+void terminal_writeint(int num, int base, int sign) {
+    static char digits[] = "0123456789abcdef";
+    char buff[16];
+    int i;
+    unsigned int x;
+
+    if (sign && (sign = num < 0))
+        x = -num;
+    else
+        x = num;
+    i = 0;
+
+    do {
+        buff[i++] = digits[x % base];
+    } while ((x /= base) != 0);
+
+    if (sign)
+        buff[i++] = '-';
+    while (--i >= 0) 
+        terminal_putchar(buff[i]);
+}
+
+void terminal_printf(const char* format, ...) {
+    unsigned int* argptr;
+    int i, c;
+    char* s;
+
+    if (format == 0)
+        return;
+
+    argptr = (unsigned int *)(void *)(&format + 1);
+    for (i = 0; (c = format[i] & 0xff) != 0; i++) {
+        if (c != '%') {
+            terminal_putchar(c);
+            continue;
+        }
+
+        c = format[++i] & 0xff;
+        if (c == 0)
+            break;
+        switch (c) {
+            case 'd':
+            case 'i':
+                terminal_writeint(*argptr++, 10, 1);
+                break;
+            case 'u':
+                terminal_writeint(*argptr++, 10, 0);
+                break;
+            case 'o':
+                terminal_writeint(*argptr++, 8, 0);
+                break;
+            case 'x':
+            case 'p':
+                terminal_writeint(*argptr++, 16, 0);
+                break;
+            case 'c':
+                terminal_putchar((char)*argptr++);
+                break;
+            case 's':
+                if ((s = (char*)*argptr++) == 0)
+                    s = "(null)";
+                while (*s) {
+                    terminal_putchar(*s);
+                    s++;
+                }
+                break;
+            case '%':
+                terminal_putchar('%');
+                break;
+            default:
+                terminal_putchar('%');
+                terminal_putchar('c');
+                break;
+        }
+    }
+}
