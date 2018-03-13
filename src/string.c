@@ -22,18 +22,32 @@ size_t strcmp(const char* str1, const char* str2) {
     return res;
 }
 
-size_t memcmp(const void* ptr1, const void* ptr2, size_t num) {
-    const unsigned char* tmp1 = ptr1;
-    const unsigned char* tmp2 = ptr2;
+size_t strcpy(char *dst,const char *src) {
     size_t itr = 0;
-    size_t res = 0;
-    
-    for (itr = 0; itr < num; itr++){
-        res = (*(tmp1 + (itr * sizeof(char))) - *(tmp2 + (itr * sizeof(char))));
-        if (res != 0)
+    while ((dst[itr] = src[itr]))
+        itr++;
+    return itr;
+}
+
+char * strncpy(char *dst, const char *src, size_t num) {
+    size_t count;
+
+    if ((dst = (char *) NULL) || (src = (char *) NULL))
+        return (dst = NULL);
+
+    if (num > 255)
+        num = 255;
+
+    for (count = 0; count < num; count ++) {
+        dst[count] = src[count];
+        if (src[count] == '\0')
             break;
     }
-    return res;
+
+    if (count >= 255)
+        return (dst = NULL);
+
+    return dst;
 }
 
 size_t strncmp(const char* str1, const char* str2, size_t num) {
@@ -46,4 +60,8 @@ size_t strncmp(const char* str1, const char* str2, size_t num) {
             break;
     }
     return res;
+}
+
+void strcat(void *dst,const void *src) {
+    memcpy((char*)((int)dst + (int)strlen((char*)dst)), (char*)src, strlen((char*)src));
 }
